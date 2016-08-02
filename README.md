@@ -17,9 +17,9 @@ Aqui podemos identificar tres entidades basicas: el **Comercio**, el **Punto de 
 
 Diariamente, el Comercio debera proveer un parte de precios, detallando la totalidad de los precios que estipula en cada Punto de Venta y Producto. Dado que los principales sujetos de esta Resolucion (Coto, Dia, Carrefour, et al) manejan cientos de tiendas y miles de productos, es evidente que la interfaz que utilicen debera permitir especificar muchos precios con una sola operacion (e.g.: mismo precio de cierto producto en todos los puntos de venta). Sin embargo, en la base de datos, la informacion provista debera almacenarse atomicamente, idealmente con un registro por Producto y Punto de Venta. Nuestra cuarta entidad sera el **Parte de Precio**, que refleja los precios (de lista y promocional) de un determinado producto, en cierto punto de venta, para determinada fecha.
 
-Un primer y sencillo ERD seria entonces:
+Un primer y sencillo DER seria entonces:
 
-[METER ACA ERD SIN TABLAS]
+![Fig. 1: DER basico](img/erd-sin-tablas.png)
 
 El articulo tercero de la resolucion menciona la informacion minima que el sistema debera recolectar:
 
@@ -33,6 +33,32 @@ d) Precio de lista de venta minorista final al público por unidad, peso o medid
 forma de comercialización; y
 e) Promociones, descuentos y todo tipo de bonificaciones.
 
-Los items (a), (b) y (c) hacen referencia, respectivamente, a los atributos minimos que deberan tener las Empresas, los Puntos de Venta y los Productos, respectivamente. Los items (d) y (e) hacen referencia a la informacion que debe ser suministrada diariamente en el Parte de Precio.
+Los items (a), (b) y (c) hacen referencia, respectivamente, a los atributos minimos que deberan tener las Empresas, los Puntos de Venta y los Productos, respectivamente. Los items (d) y (e) hacen referencia a la informacion que debe ser suministrada diariamente en el Parte de Precio. Una forma de traducir estos requerimientos a atributos de nuestras entidades es la siguiente:
 
+![Fig. 2: DER basico con atributos](img/erd-con-tablas-ingenuo-promo.png)
 
+Hay dos problemas con el tratamiento dado a las promociones:
+1. Puede haber mas de una promocion vigente para cierto producto, punto de venta y fecha.
+2. Una **Promocion** puede ser considerada una entidad en si misma, en lugar de informacion relativa a un Parte de Precio.
+
+Considerar las Promociones como entidades separadas nos permite reutilizarlas en distintos partes, tanto a traves del tiempo como para diferentes productos. Por ello, tiene sentido escindirlas de los Partes. Por otra parte, tener una tabla separada registrando las relaciones entre Promociones y Partes de Precio sobre los que aplican pareciera ser demasiada complejidad. Una solucion de compromiso, estimando que los casos en que tres o mas Promociones aplican a un mismo Parte son negligibles, es agregar al Parte campos para informar, de ser necesario, sobre una segunda promocion.
+
+Existen muchos tipos de promociones, pero la enorme mayoria tiene la forma "X% de descuento [en la enesima unidad]" o "lleve N pague M". Ambos tipos de promociones ofrecen un descuento proporcional al precio unitario, y requieren un minimo de unidades para ser efectivas.
+
+![Fig. 3: DER con Promociones](img/erd-con-promociones.png)
+
+Hasta aqui, hemos cubierto los atributos minimos para almacenar la informacion provista por las Empresas. Sin embargo, seria interesante incluir algunos atributos mas, particularmente sobre los Puntos de Venta y Productos, para ofrecer metricas e indicadores mejor segmentados. 
+
+Con respecto a los Puntos de Venta, un primer atributo seria su "categoria", que se puede extraer del articulo cuarto, que menciona entre los afectados por la Resolucion a _"almacenes, mercados, autoservicios, supermercados e hipermercados"_. Otros atributos geograficos, como Provincia y Ciudad tambien serian interesantes, pero se puede, tecnicamente, derivarlos de campos ya incluidos.
+
+Con respecto a los Productos, tambien seria util implementar una categorizacion jerarquica sencilla. Esta deberia figurar en la reglamentacion de la Resolucion 12/2016, donde se detallaran los productos implicados, pero no logro encontrar en Internet. En su lugar, supondremos un clasificacion simple, con una categoria mayor, una menor y finalmente un producto generico (e.g.: "Bebidas, Bebidas Gaseosas, Gaseosa Cola", "Fiambres, Jamon Crudo, Jamon Crudo", "Higiene Personal, Desodorantes, Desodorante en aerosol", et cetera)
+
+Ademas de esta jerarquia vertical, se pueden incluir atributos como "Marca", para facilitar la busqueda de productos al consumidor, y "Presentacion", para especificar mas alla de la descripcion el peso/volumen/cantidad del producto y facilitar comparaciones entre distintas presentaciones.
+
+![Fig. 4: DER con atributos extra para segmentacion](img/der-con-atributos-extra.png) 
+
+**NOTA**: el articulo quinto menciona que _"se pondrá a disposición de los consumidores una plataforma informática [...] a través de la cual los consumidores podrán [...] comunicar las eventuales inconsistencias ..."_. Integrar dicho sistema a este modelo requeriria al menos una nueva entidad, el Reporte de Inconsistencia, que hace referencia a un cierto Parte de Precio, y provee informacion al respecto. Entiendo que se encuentra fuera del alcance de este ejercicio exponer dicha implementacion.
+
+## Indicadores Calculables
+
+En funcion de los objetivos perseguidos, seran diferentes los indicadores que busquemos construir.
