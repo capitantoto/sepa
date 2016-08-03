@@ -14,10 +14,10 @@ JOIN partes_de_precio
 	ON puntos_de_venta.id=partes_de_precio.id_punto_de_venta
 GROUP BY empresas.id, fecha_vigencia;
 
--- Tomo como valor de referencia para la "cantidad esperada de partes" por Empresa su media historica. Otros valores menos estimados pueden ser utilizados en su lugar.
+-- Tomo como valor de referencia para la "cantidad esperada de partes" por Empresa su media historica.
 
--- Seteo la cantidad de dias a considerar para la media reciente, y el umbral por debajo del cual considero a la razon media reciente/ media historica como sospechosa. 
--- Ambos se deben ajustar a partir de los resultados para optimizar precision y exhaustividad. Un umbral muy bajo no distinguira nada, y uno demasiado alto sera muy sensible al cierre de sucursales de grandes cadenas, o a las fluctuaciones de stock de las mas pequenias.
+-- Seteo la cantidad de dias a considerar para la media reciente, y el umbral por debajo del cual considero a la razon media reciente / media historica como sospechosa. 
+-- Ambos parametros se deben ajustar a partir de los resultados para optimizar precision y exhaustividad. Un umbral muy bajo no distinguira nada, y uno demasiado alto sera muy sensible al cierre de sucursales de grandes cadenas, o a las fluctuaciones de stock de las mas pequenias.
 
 SET @nDias = 7;
 SET @umbralSospecha = 0.7;

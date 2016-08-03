@@ -21,6 +21,8 @@ CREATE TABLE puntos_de_venta(
 	longitud DOUBLE,
 	id_empresa BIGINT NOT NULL,
 	categoria VARCHAR(13), -- 'almacen', 'mercado', 'autoservicio', 'supermercado' o 'hipermercado'
+	provincia VARCHAR(255),
+	localidad VARCHAR(255),
 	PRIMARY KEY (id),
 	CONSTRAINT fk_id_empresa FOREIGN KEY (id_empresa) REFERENCES empresas(id)
 );
@@ -62,12 +64,12 @@ CREATE TABLE partes_de_precio(
 	id_promocion_2 BIGINT DEFAULT NULL,
 	precio_promocion_2 DECIMAL(11,2) DEFAULT NULL,
 	PRIMARY KEY(id),
-	UNIQUE KEY idx_en_producto_pdv_y_fecha (id_producto, id_punto_de_venta, fecha_vigencia),
+	UNIQUE KEY idx_en_producto_pdv_y_fecha (id_producto, id_punto_de_venta, fecha_vigencia), -- Todo Parte registrado por una Empresa se puede distinguir univocamente con estos 3 atributos
 	CONSTRAINT fk_id_promo_1 FOREIGN KEY (id_promocion_1) REFERENCES promociones(id),
 	CONSTRAINT fk_id_promo_2 FOREIGN KEY (id_promocion_2) REFERENCES promociones(id)
 );
 
--- Las dos siguientes tablas no son parte del DER basico, pero se incluyen para calcular algunos indicadores.
+-- Hasta aqui, se presentaron las entidades del DER Extendido (DER Minimo + atributos segmentacion). Lo que sigue es parte del "DER Completo" para producir ciertos indicadores.
 
 CREATE TABLE canastas(
 	id BIGINT NOT NULL AUTO_INCREMENT,

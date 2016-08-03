@@ -128,8 +128,8 @@ Una caracteristica tipica de la hiperinflación es el aumento casi diario de pre
 
 Aunque muy sencillo de calcular y llamativo a primera vista, un problema obvio de este indicador es que de estar verdaderamente en una hiperinflación, la adecuada provisión de información al SEPA por parte de las Empresas  se irá por la borda. Cabe averiguar, tal vez, si tál metrica será útil como indicador _temprano_ de hiperinflacion, al estilo en que las consultas sobre gripe en Google tienen (un poquito de) poder predictivo sobre la cantidad posterior de enfermos registrados.
 
-### Evolucion de los valores promocionales
+### Evolución de los valores promocionales
 
-Por el efecto de _framing_, la forma de presentar informacion es determinante en su percepcion. Por ello, a veces puede ser preferible vender un producto de $70 a "$100 con **30%** de descuento!". Algunas Empresas tienen programas de fidelizacion o facilidades de pago que hacen uso pesado pero etico de los descuentos. En otros casos, podemos estar frente a ardides de mercadeo como el mencionado.
+Por el efecto de _framing_, la forma de presentar cierta información es determinante en su percepción. Por ello, a veces puede ser preferible vender un producto de $70 a "$100 con **30%** de descuento!". Algunas Empresas tienen programas de fidelización o facilidades de pago que hacen uso pesado pero ético de los descuentos. En otros casos, podemos estar frente a ardides de mercadeo como el mencionado.
 
-No es facil diferenciar entre ambos casos, pero si tomamos el promedio de los descuentos ofrecidos por Empresa en todos sus productos a una fecha determinada, tenemos una buena medida de la injerencia de las Promociones en las politicas de marketing de la firma. Luego, como siempre, sera necesario revisar manualmente los casos mas destacados para distnguir entre practicas leales y desleales.
+No es fácil diferenciar entre ambos casos, pero si tomamos el promedio de los descuentos ofrecidos por Empresa en todos sus productos a una fecha determinada, tenemos una buena medida de la injerencia de las Promociones en las políticas de marketing de la firma. Luego, como siempre, será necesario revisar manualmente los casos más destacados para distinguir entre prácticas leales y desleales.
