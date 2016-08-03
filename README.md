@@ -98,8 +98,53 @@ Para unir en una sola tabla los Partes generados tanto por Empresas como por Con
 
 Uniendo todas las observaciones de esta seccion, obtenemos nuestro ansiado DER:
 
+![Fig. 5: DER completo. Los atributos por debajo de la linea son aquellos no exigidos por la Resolucion pero utiles para el analisis.](img/der-completo.png)
 
 ## Indicadores Calculables
 
-Que objetivos persigue uno al crear el SEPA?
+Que objetivos se persiguen al crear el SEPA? Sin animo de ser exhaustivos, podemos mencionar:
 
+1. Recopilar informacion detallada de la evolucion de precios en articulos de consumo masivo,
+2. Promover la transparencia y responsabilidad en la decision de precios de los mayores actores del sector,
+3. Empoderar al ciudadano con herramientas de comparacion de precios entre puntos de venta,
+4. Conocer de forma temprana la evolucion estimada de indicadores economicos que por su elaboracion toman mas tiempo en realizarse (e.g.: IPC).
+
+En funcion de que objetivo se persiga, podemos producir diferentes indicadores:
+
+### Efectiva provision de la informacion
+
+Una necesidad fundamental para el buen funcionamiento del sistema es la recepcion permanente de la informacion actualizada que mencionamos en el objetivo (1). Como podemos asegurarnos de que las Empresas esten proveyendo _toda_ la informacion que deben? Es imposible automatizar completamente esta tarea, pero podemos crear indicadores de posible incumplimiento, que indiquen cuando un Punto de Venta (o similarmente, una Empresa) esten registrando menos Partes por dia de lo esperado. Sean
+
+- `promRec(puntoDeVenta, nDias)`: La media de Partes de Precio registrados para cierto `puntoDeVenta` en los ultimos `nDias` dias por la Empresa que lo gerencia,
+- `promHist(puntoDeVenta)`: La media historica de Partes de Precio registrados por dia para `puntoDeVenta` por la Empresa que lo gerencia,
+
+Luego, cuando la razon `promRec / promHist` caiga por debajo de cierto `umbralSospecha`, se marcara al Punto de Venta en cuestion para analisis manual de la evidencia. En seudocodigo,
+
+```ruby
+sospechaInfoFaltante(puntoDeVenta, nDias = 7, umbralSospecha = 0.7)
+  razonObservada = promRec(puntoDeVenta, nDias) / promHist(puntoDeVenta)
+  if razonObservada < umbralSospecha
+    return True
+  else
+    return False
+  end
+end
+```
+
+Vale aclarar que tanto para este indicador como para los siguientes, el valor por default dado a los parametros fijos (`nDias` y `umbralSospecha`) deben ser ajustados a la data, aqui solo se ofrecen estimaciones razonables _a priori_.
+
+Para agilizar la consulta considerablemente a cambio de cierta perdida de flexibilidad, se puede comparar el resultado de `promRec()` contra una cantidad tabulada de antemano del numero de Productos que se espera que cada Punto De Venta reporte a diario. Esto elimina la necesidad de calcular `promHist()`.
+
+Una tercera alternatica, consiste en comparar `promRec()` a la fecha contra la distribucion ordenada de valores historicos de `promRec()`, y considerar sospechoso el valor actual en caso de que se encuentre por debajo del `umbralPercentil` establecido (= 1 o 5).
+
+### Veracidad de la informacion prevista
+
+No solo es necesario que las Empresas sujetas por la Resolucion _proporcionen informacion_ al SEPA, sino que ademas esta debe ser _confiable y veraz_: de nada sirve que se reporten precios diferentes a los que efectivamente enfrenta el consumidor. 
+
+El indicador mas sencillo posible de provision deliberada de informacion incorrecta (sea por Empresa o Punto de Venta), es sencillamente el recuento de Partes de Precio producido por particulares: mientras mas alto el numero de discrepancias, menos probable es que estas sean accidentales.
+
+Existen dos objeciones inmediatas a este indicador:
+1. A mayor surtido de productos en un Punto de Venta, mas probable es que el precio de un producto cualquiera este mal reportado por un accidente de "dedos gruesos" en la entrada de datos.
+2. Si dos ciudadanos reportan inconsistencias en un mismo Producto, esto igualmente constituye un unico error por parte de la Empresa responsable.
+
+Con respecto a la primera objecion
