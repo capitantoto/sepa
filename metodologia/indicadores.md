@@ -72,7 +72,7 @@ Es imposible construir una unica Canasta Representativa: la composicion del nucl
 
 La entidad Canasta definitivamente no es parte del modelo ER esencial para _almacenar_ la informacion del SEPA. Si es, por otra parte, una abstraccion clave para _representar_ la informacion recopilada. Si consideramos que una Canasta es simplemente un conjunto de pares (producto, cantidad), obtenemos:
 
-![Fig. 6: DER para Canastas y su union con Productos a traves de Componentes Canastas](img/der-canastas.png)
+![Fig. 6: DER para Canastas y su union con Productos a traves de Componentes Canastas](../img/der-canastas.png)
 
 ### Clasificador de Puntos de Venta
 

@@ -14,7 +14,7 @@ Diariamente, la Empresa debera proveer un parte de precios, detallando la totali
 
 Un primer y sencillo DER seria entonces:
 
-![Fig. 1: DER basico](../img/der-sin-tablas.svg)
+![Fig. 1: DER basico](../img/der-sin-tablas.png)
 
 ## Articulos Segundo y Tercero
 
@@ -37,7 +37,7 @@ El Articulo Segundo, menciona que
 
 Es decir que un Parte provisto en este instante, puede consistir en una modificacion al precio de hoy declarado ayer, o una entrega a tiempo del precio de maniana. Esto amerita que el Parte de Precio guarde explicitamente fecha y hora de creacion y modificacion, ademas de la fecha de vigencia.
 
-![Fig. 2: DER basico con atributos](img/erd-sin-promo.png)
+![Fig. 2: DER basico con atributos](../img/der-sin-promo.png)
 
 El `precio_promocional` es sin duda insuficiente para contener toda la gama de esquemas de incentivos que ofrecen los autoservicios y supermercados, se necesita al menos una `descripcion_promocion` para consignar las bases y condiciones del descuento. Esto nos lleva a pensar que tal vez sea util separar en su propia identidad a las _"promociones, descuentos y todo tipo de bonificaciones"_ (en adelante, **Promociones**).
 
@@ -47,7 +47,7 @@ Existen muchos tipos de Promociones, pero la enorme mayoria tiene una de las dos
 
 Ambos tipos de promociones ofrecen un descuento proporcional al precio unitario, y requieren un minimo de unidades para ser efectivas. Por lo tanto, una entidad Promocion basica se veria asi:
 
-![Fig. 3: Modelo Promocion](img/promocion.svg)
+![Fig. 3: Modelo Promocion](../img/promocion.png)
 
 Como se relacionan Promociones y Partes de Precio? A ojo de buen cubero, podemos estimar que un Producto en un Punto de Venta y Fecha al azar tendra:
 - muy probablemente (~ 9:10), ninguna o una promocion vigente en el Parte correspondiente,
@@ -56,7 +56,7 @@ Como se relacionan Promociones y Partes de Precio? A ojo de buen cubero, podemos
 
 Esta estimacion se debe comprobar empiricamente, pero de ser correcta, nos hace pensar que normalizar la relacion entre Promociones y Partes en su propia tabla puede ser excesivo. Una solucion de compromiso, seria incluir en el Parte dos claves foraneas para hacer referencia a hasta dos Promociones. Conservaremos tambien en el Parte, a fines practicos, cada precio promocional.
 
-![Fig. 3: DER con Promociones](img/erd-con-promo.png)
+![Fig. 3: DER con Promociones](../img/der-con-promo.png)
 
 ## Otras Consideraciones
 
@@ -88,4 +88,4 @@ Para unir en una sola tabla los Partes generados tanto por Empresas como por Con
 
 Uniendo todas las observaciones de esta seccion, obtenemos nuestro ansiado DER:
 
-![Fig. 5: DER completo. Los atributos por debajo de la linea son aquellos no exigidos por la Resolucion pero utiles para el analisis.](img/erd-completo.png)
+![Fig. 5: DER completo. Los atributos por debajo de la linea son aquellos no exigidos por la Resolucion pero utiles para el analisis.](../img/der-con-atributos-extra.png)
