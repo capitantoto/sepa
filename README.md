@@ -107,9 +107,9 @@ Que objetivos se persiguen al crear el SEPA? Sin animo de ser exhaustivos, podem
 1. Recopilar informacion detallada de la evolucion de precios en articulos de consumo masivo,
 2. Promover la transparencia y responsabilidad en la decision de precios de los mayores actores del sector,
 3. Empoderar al ciudadano con herramientas de comparacion de precios entre puntos de venta,
-4. Conocer de forma temprana la evolucion estimada de indicadores economicos que por su elaboracion toman mas tiempo en realizarse (e.g.: IPC).
+4. Resaltar a aquellas Empresas que mantengan sus aumentos de precios por debajo de la media, y
 
-En funcion de que objetivo se persiga, podemos producir diferentes indicadores:
+Del universo de indicadores posibles para estos objetivos, a continuacion presentaremos uno por cada uno. Pese a que los indicadores que involucran precios utilizan por default los precios de lista, todos se pueden aplicar a los precios promocionales con minimos cambios.
 
 ### Efectiva provision de la informacion
 
@@ -167,10 +167,57 @@ El consumidor altamente motivado puede estar dispuesto a detallar su propia cana
 
 Es imposible construir una unica Canasta Representativa: la composicion del nucleo familiar, sus habitos alimenticios y hasta la propension a cocinar en casa determinan Canastas bastante disimiles. Lo ideal, en su lugar, seria confeccionar "puertas adentro" una **serie de Canastas Representativas** breve ("Pareja joven, sin hijos, vegetarianos", "Adulto con un hijo a cargo", "Asado para 10 personas"), y que cada una de ellas sea su propio indicador de competitividad, entre los cuales el Consumidor elegira de acuerdo a sus propositos.
 
-- Incluir Canastas en DER
-- Cuantificar valor canastas, ranking
+#### Diagrama ER de Canastas
 
-- Variacion intertemporal de precios (proxy componentes IPC) por canasta
+La entidad Canasta definitivamente no es parte del modelo ER esencial para _almacenar_ la informacion del SEPA. Si es, por otra parte, una abstraccion clave para _representar_ la informacion recopilada. Si consideramos que una Canasta es simplemente un conjunto de pares (producto, cantidad), obtenemos:
 
-- Deteccion temprana de situaciones de hiperinflacion.
+![Fig. 6: DER para Canastas y su union con Productos a traves de Componentes Canastas](img/der-canastas.png)
 
+#### Clasificador de Puntos de Venta
+
+Con el modelo sugerido, podemos calcular el precio de cualquier canasta en tantos locales como se desee. En caso de que este servicio se le ofrezca al Consumidor, los PdV habran de restringirse a un numero manejable tanto para la consulta como para la visualizacion. Para generar el indicador de competitividad en precios que mencionamos antes, habremos de calcular el valor a la fecha de determinada Canasta de referencia en _todos_ los locales.
+
+Que Canasta sera adecuada para dicha tarea? Ninguna sera perfecta, pero podemos aprovechar el trabajo de los que mas saben, y utilizar a tal fin la composicion de la division "Alimentos y Bebidas, Alimentos para consumir en el Hogar" del Indice de Precios al Consumidor que publica el INDEC: los productos que el SEPA rastrea coinciden fuertemente con dicho componente del IPC. Tristemente, en la ultima Metodologia publicada, el Anexo titulado "Canasta Basica Alimentaria" tiene un texto de relleno estilo Lorem Ipsum. 
+
+Asumiendo que tenemos tal canasta representativa, `canastaRep`, y una funcion `precioCanasta(canasta,fecha,puntoDeVenta)` que calcula la suma de los precios a cierta de los productos y cantidades incluidos en `canasta` en venta en `puntoDeVenta`, nuestra medida de competitividad es
+
+> `precioCanastaRepresentativa(puntoDeVenta) = precioCanasta(canastaRep, "Hoy", puntoDeVenta)`
+
+Es de esperar que algunos PdV no comercializen todos los Productos de la Canasta representativa: para evitar que los comercios con menor surtido dominen el ranking, debemos asegurarnos de asignarle un precio "por default" a todo producto que un PdV no distribuye.
+
+Si se quiere transformar este precio en un indicador mas tradicional, se puede tomar como base el precio minimo obtenido para la Canasta representativa, asignarle un valor de 100 y ajustar a esta nueva escala el resto de los precios obtenidos.
+
+### Variaciones intertemporales de precios
+
+En el apartado anterior comparamos los precios en distintos Puntos de Venta entre si, para un cierto instante. Otra forma esclarecedora de comparar precios de canastas, es intertemporalmente, en un mismo PdV o Empresa: esto nos dara una idea razonable del compromiso de una Empresa a mantener la suba de precios a un minimo. Como siempre, la eleccion de la canasta de productos a comparar es clave para evitar abusos del indicador (donde una Empresa sube todos sus precios salvo los incluidos en la Canasta utilizada), y que este sea una verdadera senial de confianza.
+
+Hay muchas formas de medir variaciones intertemporales de indicadores de negocios, como del primero del mes/anio a al fecha (MTD/YTD), o 30/365 dias atras a la fecha. El INDEC utiliza un indicador mas robusto, donde la variacion de precios mensual se calcula comparando los promedios de precios de _todos los dias del mes_. Cualquiera de estas opciones puede ser valida. Tomemos para este indicador la variacion del primero del anio a la fecha, o _year-to-date_.
+
+En este caso, en lugar de calcular la variacion por Punto de Venta, lo haremos a promediando a nivel Empresa las variaciones en cada uno de sus PdV. Buscamos un indicador de "buena fe" en la formacion de precios por parte de las Empresas, y no de sus locales particulares. Reutilizando la funcion `precioCanasta()` y la Canasta `canastaRep` anteriormente descrita, construimos
+
+- `precioCanastaEmpresa(canasta, fecha, empresa)` = Promedio de precioCanasta(canasta, fecha, puntoDeVenta) para todos los Puntos de Venta de `empresa`
+
+Finalmente, el indicador que buscamos se obtiene como
+
+> `variacionAnioALaFecha(empresa, canastaRep) = ( precioCanastaEmpresa(canastaRep, "Hoy", empresa) / precioCanastaEmpresa(canastaRep, "Primero del Anio", empresa) - 1 ) * 100`
+
+
+### Otros indicadores posibles
+
+#### Deteccion de situaciones hiperinflacionarias
+
+Una tipica anecdota de las epocas hiperinflacionarias en Argentina cuenta que no solo se solia pagar diariamente a los empleados, sino que hasta se llegaba a agregar un descanso en medio de la jornada explicitamente para ir de compras, antes de que los precios volviesen a subir. Es decir que una caracteristica tipica de la hiperinflacion es el aumento casi diario de precios. En la Resolucion 12/2016, se exige que las Empresas reporten cualquier durante el transcurso del dia al precio declarado la jornada anterior. Es de esperar que la correccion de errores accidentales, pero ni bien la tasa de Partes de Precio actualizada en el dia de vigencia sobre el total supera este "ruido de fondo", hemos de empezar a sospechar una acelerada inflacionaria.
+
+Aunque muy sencillo de calcular y llamativo a primera vista, un problema obvio de este indicador es que de estar verdaderamente en una hiperinflacion, la adecuada provision de informacion al SEPA por parte de las Empresas seguro se deteriorara fuertemente. Cabe averiguar, tal vez, si tal metrica sera util como indicador _temprano_ de hiperinflacion, al estilo en que las consultas sobre gripe en Google tienen (un poquito de) poder predictivo sobre la cantidad posterior de enfermos registrados. 
+
+#### Evolucion de los valores promocionales
+
+Por el efecto de _framing_, la forma de presentar informacion es determinante en su percepcion. Por ello, a veces puede ser preferible vender un producto de $70 a "$100 con **30%** de descuento!". Algunas Empresas tienen programas de fidelizacion o facilidades de pago que hacen uso pesado pero etico de los descuentos. En otros casos, podemos estar frente a ardides de mercadeo como el mencionado.
+
+No es facil diferenciar entre ambos casos, pero si tomamos el promedio de los descuentos ofrecidos por Empresa en todos sus productos a una fecha determinada, tenemos una buena medida de la injerencia de las Promociones en las politicas de marketing de la firma. Luego, como siempre, sera necesario revisar manualmente los casos mas destacados para distnguir entre practicas leales y desleales.
+
+### Recursos Consultados
+
+[Secretaria de Comercio, Resolucion 12/2016, Sistema Electronico de Publicidad de Precios Argentinos](https://www.boletinoficial.gob.ar/pdf/linkQR/aUhvb3k0ZmlGKzVycmZ0RFhoUThyQT09)
+[Que es el IPC?](http://www.indec.gov.ar/ftp/cuadros/economia/ipc_que_es_06_16.pdf)
+[Metodologia IPC Abril 2016](http://www.indec.gov.ar/ftp/cuadros/economia/ipc_metodologia_abril2016.pdf)
