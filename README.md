@@ -113,10 +113,10 @@ En funcion de que objetivo se persiga, podemos producir diferentes indicadores:
 
 ### Efectiva provision de la informacion
 
-Una necesidad fundamental para el buen funcionamiento del sistema es la recepcion permanente de la informacion actualizada que mencionamos en el objetivo (1). Como podemos asegurarnos de que las Empresas esten proveyendo _toda_ la informacion que deben? Es imposible automatizar completamente esta tarea, pero podemos crear indicadores de posible incumplimiento, que indiquen cuando un Punto de Venta (o similarmente, una Empresa) esten registrando menos Partes por dia de lo esperado. Sean
+Una necesidad fundamental para el buen funcionamiento del sistema es la **recepcion permanente de la informacion** actualizada que mencionamos en el objetivo (1). Como podemos asegurarnos de que las Empresas esten proveyendo _toda_ la informacion que deben? Es imposible automatizar completamente esta tarea, pero podemos crear indicadores de posible incumplimiento, que indiquen cuando un Punto de Venta (o similarmente, una Empresa) esten registrando menos Partes por dia de lo esperado. Sean
 
-- `promRec(puntoDeVenta, nDias)`: La media de Partes de Precio registrados para cierto `puntoDeVenta` en los ultimos `nDias` dias por la Empresa que lo gerencia,
-- `promHist(puntoDeVenta)`: La media historica de Partes de Precio registrados por dia para `puntoDeVenta` por la Empresa que lo gerencia,
+> - `promRec(puntoDeVenta, nDias)`: La cantidad media de Partes de Precio registrados para cierto `puntoDeVenta` en los ultimos `nDias` dias por la Empresa que lo gerencia,
+> - `promHist(puntoDeVenta)`: La cantidad media historica de Partes de Precio registrados por dia para `puntoDeVenta` por la Empresa que lo gerencia,
 
 Luego, cuando la razon `promRec / promHist` caiga por debajo de cierto `umbralSospecha`, se marcara al Punto de Venta en cuestion para analisis manual de la evidencia. En seudocodigo,
 
@@ -139,12 +139,38 @@ Una tercera alternatica, consiste en comparar `promRec()` a la fecha contra la d
 
 ### Veracidad de la informacion prevista
 
-No solo es necesario que las Empresas sujetas por la Resolucion _proporcionen informacion_ al SEPA, sino que ademas esta debe ser _confiable y veraz_: de nada sirve que se reporten precios diferentes a los que efectivamente enfrenta el consumidor. 
+No solo es necesario que las Empresas sujetas por la Resolucion _proporcionen informacion_ al SEPA, sino que ademas esta debe ser **confiable y veraz**: de nada sirve que se reporten precios diferentes a los que efectivamente enfrenta el consumidor.
 
-El indicador mas sencillo posible de provision deliberada de informacion incorrecta (sea por Empresa o Punto de Venta), es sencillamente el recuento de Partes de Precio producido por particulares: mientras mas alto el numero de discrepancias, menos probable es que estas sean accidentales.
+El recuento de Partes de Precio producido (en los ultimos `nDias` dias) por particulares para cada Empresa y/o Punto de Venta nos permite generar un simple ranking de potenciales infractores: mientras mas alto el numero de discrepancias, menos probable es que estas sean accidentales.
 
-Existen dos objeciones inmediatas a este indicador:
-1. A mayor surtido de productos en un Punto de Venta, mas probable es que el precio de un producto cualquiera este mal reportado por un accidente de "dedos gruesos" en la entrada de datos.
-2. Si dos ciudadanos reportan inconsistencias en un mismo Producto, esto igualmente constituye un unico error por parte de la Empresa responsable.
+Para evitar dobles conteos, debemos considerar no el numero total de Partes particulares, sino el numero de Productos _unicos_ sobre los que se han provisto Partes particulares en el periodo relevante. Ademas, considerando que de estar proveyendo deliberadamente informacion incorrecta es la Empresa quien enfrentara acciones legales y no el Punto de Venta, el nivel de agregacion ideal para esta metrica es la Empresa. Bajo estas condiciones, podemos definir la cantidad de Precios Mal Informados por Empresa como:
 
-Con respecto a la primera objecion
+> `preciosEquivocados(empresa, nDias = 7)`: Cantidad de Productos _Unicos_ mencionados en los Partes de Precios registrados por "particulares" en cualquiera de los Puntos de Venta que pertenecen a `empresa` en los ultimos `nDias` dias.
+
+Ordenando a las Empresas por el numero de `preciosEquivocados()` de mayor a menor, obtenemos un orden de prioridad razonable para detectar posible dolo en la inputacion de precios.
+
+_NOTA: Este indicador supone que si un ciudadano registra un Parte de Precio, es unicamente porque el precio que observa no coincide con el registrado en el Sistema. De poder registrar Partes por otras razones, debemos agregar la condicion de los Partes de particulares a considerar sean solo aquellos donde el precio que menciona la Empresa difiera del que constata el Particular. Otras sofisticaciones posibles incluyen la ponderacion de cada inconsistencia en funcion de la razon entre precio registrado y precio observado._
+
+### Comparacion entre Puntos de Venta
+
+A pesar de la a veces masiva oferta de Puntos de Venta, los consumidores rara vez saben con certeza _donde_ les conviene realizar sus compras: tal vez los lacteos son mas baratos en un lugar, los articulos de limpieza en un segundo, y la comida para gatos en un tercero. Sin embargo, realizar una ruta optima en todos los precios probablemente sea suboptimo al considerar el tiempo involucrado. En general, lo que un consumidor buscara es aquel negocio que, _en promedio_, tenga los mejores precios para un conjunto de articulos, y acudira unicamente a el. El objetivo ahora es proveer una medida de **competitividad en los precios** de cada Punto de Venta. 
+
+Para empezar, podemos contar que proporcion de los Productos ofrecidos cierta fecha en un Punto de Venta tienen el precio minimo registrado para dicho Producto y Fecha entre todos los Puntos de Venta (de la zona/region). Si imaginamos un comercio donde _todos_ los productos se venden _solamente_ un centavo por encima del precio minimo, veremos que este primer indicador falla: la proporcion de precios minimos sera exactamente cero, cuando es harto probable que un comercio asi sea altamente competitivo en precios.
+
+Una forma de "emparchar" este indicador, seria calculando la razon entre la suma de todos los precios informados por Punto de Venta (o PdV), contra la suma de los precios minimos registrados para esos mismos Productos a la fecha en cuestion. Esta version es mas robusta a pequenas diferencias entre el precio ofrecido por un PdV y el minimo a la fecha.
+
+Aun asi, sigue siendo un tanto arbitrario: por que deberian entrar en el recuento *todos* los productos ofrecidos, independientemente de su frecuencia de ventas? Si deseamos ofrecer un indicador verdaderamente util de competitividad en precios, debemos inevitablemente introducir el concepto de **Canastas** representativas.
+
+Dada una canasta en particular, con ciertos productos y cantidad de unidades de cada uno, perdemos generalidad (ya no se considera _toda_ la oferta de un PdV), pero ganamos considerablemente en utilidad al Consumidor Final.
+
+El consumidor altamente motivado puede estar dispuesto a detallar su propia canasta de compras, y utilizar el SEPA para comparar su valor entre varios PdV. Sin embargo, es de esperar que la mayoria de los usuarios particulares del SEPA prefieran, mas sencillamente, ser informados sobre que Puntos de Venta tienen el mejor precio para ciertas Canastas Representativas y acudan a ellos: pierden en minimizacion de costes, pero ganan en tiempo destinado a ello.
+
+Es imposible construir una unica Canasta Representativa: la composicion del nucleo familiar, sus habitos alimenticios y hasta la propension a cocinar en casa determinan Canastas bastante disimiles. Lo ideal, en su lugar, seria confeccionar "puertas adentro" una **serie de Canastas Representativas** breve ("Pareja joven, sin hijos, vegetarianos", "Adulto con un hijo a cargo", "Asado para 10 personas"), y que cada una de ellas sea su propio indicador de competitividad, entre los cuales el Consumidor elegira de acuerdo a sus propositos.
+
+- Incluir Canastas en DER
+- Cuantificar valor canastas, ranking
+
+- Variacion intertemporal de precios (proxy componentes IPC) por canasta
+
+- Deteccion temprana de situaciones de hiperinflacion.
+
