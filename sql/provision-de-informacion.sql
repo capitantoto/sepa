@@ -1,5 +1,7 @@
+-- Estimar que Empresas no estan entregando tanta informacion como se espera de ellas
 USE sepa;
 
+-- Creo una vista con la cantidad de Partes creados diariamente por cada Empresa
 DROP VIEW IF EXISTS partes_diarios_por_empresa;
 CREATE VIEW partes_diarios_por_empresa AS
 SELECT empresas.id AS 'id_empresa',
@@ -11,6 +13,11 @@ JOIN puntos_de_venta
 JOIN partes_de_precio
 	ON puntos_de_venta.id=partes_de_precio.id_punto_de_venta
 GROUP BY empresas.id, fecha_vigencia;
+
+-- Tomo como valor de referencia para la "cantidad esperada de partes" por Empresa su media historica. Otros valores menos estimados pueden ser utilizados en su lugar.
+
+-- Seteo la cantidad de dias a considerar para la media reciente, y el umbral por debajo del cual considero a la razon media reciente/ media historica como sospechosa. 
+-- Ambos se deben ajustar a partir de los resultados para optimizar precision y exhaustividad. Un umbral muy bajo no distinguira nada, y uno demasiado alto sera muy sensible al cierre de sucursales de grandes cadenas, o a las fluctuaciones de stock de las mas pequenias.
 
 SET @nDias = 7;
 SET @umbralSospecha = 0.7;
