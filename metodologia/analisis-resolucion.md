@@ -14,7 +14,7 @@ Diariamente, la Empresa debera proveer un parte de precios, detallando la totali
 
 Un primer y sencillo DER seria entonces:
 
-![Fig. 1: DER basico](../img/erd-sin-tablas.png)
+![Fig. 1: DER basico](../img/der-sin-tablas.svg)
 
 ## Articulos Segundo y Tercero
 
