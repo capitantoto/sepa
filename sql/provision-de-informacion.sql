@@ -22,8 +22,6 @@ GROUP BY empresas.id, fecha_vigencia;
 SET @nDias = 7;
 SET @umbralSospecha = 0.7;
 
-DROP VIEW IF EXISTS sospechas_partes_faltantes;
-CREATE VIEW sospechas_partes_faltantes AS
 SELECT
 	id_empresa,
 	CURDATE() AS 'fecha_corriente',
