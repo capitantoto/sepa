@@ -9,7 +9,7 @@ Que objetivos se persiguen al crear el SEPA? Sin animo de ser exhaustivos, podem
 
 Del universo de indicadores posibles para estos objetivos, a continuacion presentaremos uno por cada uno. Pese a que los indicadores que involucran precios utilizan por default los precios de lista, todos se pueden aplicar a los precios promocionales con minimos cambios.
 
-## Efectiva provision de la informacion
+## 1. Efectiva provision de la informacion
 
 Una necesidad fundamental para el buen funcionamiento del sistema es la **recepcion permanente de la informacion** actualizada que mencionamos en el objetivo (1). Como podemos asegurarnos de que las Empresas esten proveyendo _toda_ la informacion que deben? Es imposible automatizar completamente esta tarea, pero podemos crear indicadores de posible incumplimiento, que indiquen cuando un Punto de Venta (o similarmente, una Empresa) esten registrando menos Partes por dia de lo esperado. Sean
 
@@ -35,7 +35,7 @@ Para agilizar la consulta considerablemente a cambio de cierta perdida de flexib
 
 Una tercera alternatica, consiste en comparar `promRec()` a la fecha contra la distribucion ordenada de valores historicos de `promRec()`, y considerar sospechoso el valor actual en caso de que se encuentre por debajo del `umbralPercentil` establecido (= 1 o 5).
 
-## Veracidad de la informacion prevista
+## 2. Veracidad de la informacion prevista
 
 No solo es necesario que las Empresas sujetas por la Resolucion _proporcionen informacion_ al SEPA, sino que ademas esta debe ser **confiable y veraz**: de nada sirve que se reporten precios diferentes a los que efectivamente enfrenta el consumidor.
 
@@ -52,7 +52,7 @@ _**NOTA**: Este indicador supone que
 - (b) si un ciudadano registra un Parte de Precio, es unicamente porque el precio que observa no coincide con el registrado en el Sistema.
 De poder registrar Partes por otras razones, debemos agregar la condicion de los Partes de particulares a considerar sean solo aquellos donde el precio que menciona la Empresa difiera del que constata el Particular. Otras sofisticaciones posibles incluyen la ponderacion de cada inconsistencia en funcion de la razon entre precio registrado y precio observado._
 
-## Comparacion entre Puntos de Venta
+## 3. Comparacion entre Puntos de Venta
 
 A pesar de la a veces masiva oferta de Puntos de Venta, los consumidores rara vez saben con certeza _donde_ les conviene realizar sus compras: tal vez los lacteos son mas baratos en un lugar, los articulos de limpieza en un segundo, y la comida para gatos en un tercero. Sin embargo, realizar una ruta optima en todos los precios probablemente sea suboptimo al considerar el tiempo involucrado. En general, lo que un consumidor buscara es aquel negocio que, _en promedio_, tenga los mejores precios para un conjunto de articulos, y acudira unicamente a el. El objetivo ahora es proveer una medida de **competitividad en los precios** de cada Punto de Venta. 
 
@@ -88,7 +88,7 @@ Es de esperar que algunos PdV no comercializen todos los Productos de la Canasta
 
 Si se quiere transformar este precio en un indicador mas tradicional, se puede tomar como base el precio minimo obtenido para la Canasta representativa, asignarle un valor de 100 y ajustar a esta nueva escala el resto de los precios obtenidos.
 
-## Variaciones intertemporales de precios
+## 4. Variaciones intertemporales de precios
 
 En el apartado anterior comparamos los precios en distintos Puntos de Venta entre si, para un cierto instante. Otra forma esclarecedora de comparar precios de canastas, es intertemporalmente, en un mismo PdV o Empresa: esto nos dara una idea razonable del compromiso de una Empresa a mantener la suba de precios a un minimo. Como siempre, la eleccion de la canasta de productos a comparar es clave para evitar abusos del indicador (donde una Empresa sube todos sus precios salvo los incluidos en la Canasta utilizada), y que este sea una verdadera senial de confianza.
 
@@ -103,7 +103,7 @@ Finalmente, el indicador que buscamos se obtiene como
 > `variacionAnioALaFecha(empresa, canastaRep) = ( precioCanastaEmpresa(canastaRep, "Hoy", empresa) / precioCanastaEmpresa(canastaRep, "Primero del Anio", empresa) - 1 ) * 100`
 
 
-## Otros indicadores posibles
+## 5. Otros indicadores posibles
 
 ### Deteccion de situaciones hiperinflacionarias
 
