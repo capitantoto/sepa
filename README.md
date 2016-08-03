@@ -19,7 +19,7 @@ Con el DER preparado, y luego de un período de evaluación de las posibilidades
 
 ## Entregable
 
-- Archivos PNG del [DER minimo](img/der-minimo.svg) y el [DER completo](img/der-completo.svg) están disponibles en `img/`. Para confeccionarlos se utilizó [Draw.io](https://www.draw.io/), y los archivos XML "crudos" se encuentran en `xml/`.
+- Archivos PNG del [DER minimo](img/der-minimo.png) y el [DER completo](img/der-completo.png) están disponibles en `img/`. Para confeccionarlos se utilizó [Draw.io](https://www.draw.io/), y los archivos XML "crudos" se encuentran en `xml/`.
 - La [documentación](metodologia/indicadores.md) sobre posibles indicadores ya se mencionó, y se encuentra en la carpeta `metodologia/`.
 - Las consultas SQL para dos de estos indicadores, junto con una implementación en MySQL del DER completo estan en `sql/`.
 
