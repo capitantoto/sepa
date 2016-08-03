@@ -39,22 +39,20 @@ Una tercera alternatica, consiste en comparar `promRec()` a la fecha contra la d
 
 ## 2. Veracidad de la información prevista
 
-No solo es necesario que las Empresas sujetas por la Resolucion _proporcionen informacion_ al SEPA, sino que ademas esta debe ser **confiable y veraz**: de nada sirve que se reporten precios diferentes a los que efectivamente enfrenta el consumidor.
+No sólo es necesario que las Empresas sujetas por la Resolución _proporcionen información_ al SEPA, sino que además ésta debe ser **confiable y veraz**: de nada sirve que se reporten precios diferentes a los que efectivamente enfrenta el consumidor.
 
-El recuento de Partes de Precio producido (en los ultimos `nDias` dias) por particulares para cada Empresa y/o Punto de Venta nos permite generar un simple ranking de potenciales infractores: mientras mas alto el numero de discrepancias, menos probable es que estas sean accidentales.
+Sin acceso a Partes ciudadanos, esto resulta imposible. Por otra parte, si imaginamos una tabla de Partes de Precios ciudadanos como la que se menciona en el Análisis de la Resolución, el recuento de Partes de Precio producido (en los últimos `nDias` días) por particulares para cada Empresa nos permite generar un simple ranking de potenciales infractores: mientras más alto el número de discrepancias, menos probable es que éstas sean accidentales.
 
-Para evitar dobles conteos, debemos considerar no el numero total de Partes particulares, sino el numero de Productos _unicos_ sobre los que se han provisto Partes particulares en el periodo relevante. Ademas, considerando que de estar proveyendo deliberadamente informacion incorrecta es la Empresa quien enfrentara acciones legales y no el Punto de Venta, el nivel de agregacion ideal para esta metrica es la Empresa. Bajo estas condiciones, podemos definir la cantidad de Precios Mal Informados por Empresa como:
+Para evitar dobles conteos, debemos considerar el número de Productos _únicos_ sobre los que se han provisto Partes particulares en el período relevante. Bajo estas condiciones, podemos definir la cantidad de Precios Mal Informados por Empresa como:
 
-> `preciosEquivocados(empresa, nDias = 7)`: Cantidad de Productos _Unicos_ mencionados en los Partes de Precios registrados por "particulares" en cualquiera de los Puntos de Venta que pertenecen a `empresa` en los ultimos `nDias` dias.
+> `preciosEquivocados(empresa, nDias = 7)`: Cantidad de Productos _únicos_ mencionados en los Partes de Precios registrados por "particulares" en cualquiera de los Puntos de Venta que pertenecen a la Empresa `empresa` en los ultimos `nDias` días.
 
-Ordenando a las Empresas por el numero de `preciosEquivocados()` de mayor a menor, obtenemos un orden de prioridad razonable para detectar posible dolo en la inputacion de precios.
+Ordenando los resultados de `preciosEquivocados()` de mayor a menor, obtenemos un orden de prioridad razonable para detectar posible dolo en la inputación de precios al sistema.
 
-_**NOTA**: Este indicador supone que
-- (a) efectivamente contamos con una tabla muy similar a Partes de Precio para recopilar informacion ciudadana, y
-- (b) si un ciudadano registra un Parte de Precio, es unicamente porque el precio que observa no coincide con el registrado en el Sistema.
-De poder registrar Partes por otras razones, debemos agregar la condicion de los Partes de particulares a considerar sean solo aquellos donde el precio que menciona la Empresa difiera del que constata el Particular. Otras sofisticaciones posibles incluyen la ponderacion de cada inconsistencia en funcion de la razon entre precio registrado y precio observado._
+**NOTA**: Este indicador supone que si un ciudadano registra un Parte de Precio, es únicamente porque el precio que observa no coincide con el registrado en el Sistema.
+De poder registrar Partes por otras razones, debemos agregar la condición de que los Partes de particulares a considerar sean sólo aquellos donde el precio que menciona la Empresa difiera del que constata el Particular. Otras sofisticaciones posibles incluyen la ponderación de cada inconsistencia en función de la razón entre precio registrado y precio observado.
 
-## 3. Comparacion entre Puntos de Venta
+## 3. Comparación entre Puntos de Venta
 
 A pesar de la a veces masiva oferta de Puntos de Venta, los consumidores rara vez saben con certeza _donde_ les conviene realizar sus compras: tal vez los lacteos son mas baratos en un lugar, los articulos de limpieza en un segundo, y la comida para gatos en un tercero. Sin embargo, realizar una ruta optima en todos los precios probablemente sea suboptimo al considerar el tiempo involucrado. En general, lo que un consumidor buscara es aquel negocio que, _en promedio_, tenga los mejores precios para un conjunto de articulos, y acudira unicamente a el. El objetivo ahora es proveer una medida de **competitividad en los precios** de cada Punto de Venta. 
 
