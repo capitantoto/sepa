@@ -1,26 +1,28 @@
 # Indicadores Posibles
 
-Que objetivos se persiguen al crear el SEPA? Sin animo de ser exhaustivos, podemos mencionar:
+Qué objetivos se persiguen al crear el SEPA? Sin ánimo de ser exhaustivos, podemos imaginar:
 
-1. Recopilar informacion detallada de la evolucion de precios en articulos de consumo masivo,
-2. Promover la transparencia y responsabilidad en la decision de precios de los mayores actores del sector,
-3. Empoderar al ciudadano con herramientas de comparacion de precios entre puntos de venta,
-4. Resaltar a aquellas Empresas que mantengan sus aumentos de precios por debajo de la media, y
+1. Recopilar información detallada de la evolución de precios en artículos de consumo masivo,
+2. Promover la transparencia y responsabilidad en la decisión de precios de los mayores actores del sector,
+3. Empoderar al ciudadano con herramientas de comparación de precios entre puntos de venta, y
+4. Destacar a aquellas Empresas que mantengan sus aumentos de precios por debajo de la media.
 
-Del universo de indicadores posibles para estos objetivos, a continuacion presentaremos uno por cada uno. Pese a que los indicadores que involucran precios utilizan por default los precios de lista, todos se pueden aplicar a los precios promocionales con minimos cambios.
+Del universo de indicadores posibles para estos objetivos, a continuación presentaremos uno por cada uno. 
 
-## 1. Efectiva provision de la informacion
+Pese a que los indicadores que involucran precios se describen utilizando los precios de lista, todos se pueden aplicar a los precios promocionales con mínimos cambios.
 
-Una necesidad fundamental para el buen funcionamiento del sistema es la **recepcion permanente de la informacion** actualizada que mencionamos en el objetivo (1). Como podemos asegurarnos de que las Empresas esten proveyendo _toda_ la informacion que deben? Es imposible automatizar completamente esta tarea, pero podemos crear indicadores de posible incumplimiento, que indiquen cuando un Punto de Venta (o similarmente, una Empresa) esten registrando menos Partes por dia de lo esperado. Sean
+## 1. Efectiva provisión de la información
 
-> - `promRec(puntoDeVenta, nDias)`: La cantidad media de Partes de Precio registrados para cierto `puntoDeVenta` en los ultimos `nDias` dias por la Empresa que lo gerencia,
-> - `promHist(puntoDeVenta)`: La cantidad media historica de Partes de Precio registrados por dia para `puntoDeVenta` por la Empresa que lo gerencia,
+Una necesidad fundamental para el buen funcionamiento del sistema es la **recepción permanente de información** actualizada. Cómo podemos asegurarnos de que las Empresas estén proveyendo _toda_ la información que deben? Es imposible automatizar completamente esta tarea, pero si tenemos una "cantidad esperada de Partes" de referencia, podemos crear indicadores de incumplimiento, cuando un Punto de Venta/Empresa esté registrando menos Partes por día de lo esperado. Sean
 
-Luego, cuando la razon `promRec / promHist` caiga por debajo de cierto `umbralSospecha`, se marcara al Punto de Venta en cuestion para analisis manual de la evidencia. En seudocodigo,
+> - `promRec(empresa, nDias)`: La cantidad media de Partes de Precio registrados por cierta `empresa` en los ultimos `nDias` dias.
+> - `promHist(empresa)`: La cantidad media historica de Partes de Precio registrados por la Empresa `empresa`
+
+Luego, cuando la razón `promRec / promHist` caiga por debajo de cierto `umbralSospecha`, se marcará la empresa en cuestión para análisis manual de la evidencia. En seudocódigo,
 
 ```ruby
-sospechaInfoFaltante(puntoDeVenta, nDias = 7, umbralSospecha = 0.7)
-  razonObservada = promRec(puntoDeVenta, nDias) / promHist(puntoDeVenta)
+sospechaInfoFaltante(empresa, nDias = 7, umbralSospecha = 0.7)
+  razonObservada = promRec(empresa, nDias) / promHist(empresa)
   if razonObservada < umbralSospecha
     return True
   else
@@ -29,13 +31,13 @@ sospechaInfoFaltante(puntoDeVenta, nDias = 7, umbralSospecha = 0.7)
 end
 ```
 
-Vale aclarar que tanto para este indicador como para los siguientes, el valor por default dado a los parametros fijos (`nDias` y `umbralSospecha`) deben ser ajustados a la data, aqui solo se ofrecen estimaciones razonables _a priori_.
+Vale aclarar que tanto para este indicador como para los siguientes, el valor por default dado a los parámetros fijos (`nDias` y `umbralSospecha`) deben ser ajustados a la data, aquí solo se ofrecen estimaciones razonables _a priori_.
 
-Para agilizar la consulta considerablemente a cambio de cierta perdida de flexibilidad, se puede comparar el resultado de `promRec()` contra una cantidad tabulada de antemano del numero de Productos que se espera que cada Punto De Venta reporte a diario. Esto elimina la necesidad de calcular `promHist()`.
+Para agilizar la consulta considerablemente a cambio de cierta perdida de flexibilidad, se puede comparar el resultado de `promRec()` contra una cantidad tabulada de antemano del numero de Partes que se espera que cada Empresa reporte a diario, eliminando la necesidad de calcular `promHist()`.
 
-Una tercera alternatica, consiste en comparar `promRec()` a la fecha contra la distribucion ordenada de valores historicos de `promRec()`, y considerar sospechoso el valor actual en caso de que se encuentre por debajo del `umbralPercentil` establecido (= 1 o 5).
+Una tercera alternatica, consiste en comparar `promRec()` a la fecha contra la distribucion ordenada de valores historicos de `promRec()` para saber en qué percentil se encuentra, y considerar sospechoso el valor actual en caso de que se encuentre por debajo de un `umbralPercentil` establecido, como 1 ó 5.
 
-## 2. Veracidad de la informacion prevista
+## 2. Veracidad de la información prevista
 
 No solo es necesario que las Empresas sujetas por la Resolucion _proporcionen informacion_ al SEPA, sino que ademas esta debe ser **confiable y veraz**: de nada sirve que se reporten precios diferentes a los que efectivamente enfrenta el consumidor.
 
