@@ -4,7 +4,7 @@ USE sepa;
 -- Creo una vista con la cantidad de Partes creados diariamente por cada Empresa
 DROP VIEW IF EXISTS partes_diarios_por_empresa;
 CREATE VIEW partes_diarios_por_empresa AS
-SELECT empresas.id AS 'id_empresa',
+SELECT	empresas.id AS 'id_empresa',
 	partes_de_precio.fecha_vigencia,
 	COUNT(partes_de_precio.id) AS 'cantidad'
 FROM empresas
@@ -22,8 +22,7 @@ GROUP BY empresas.id, fecha_vigencia;
 SET @nDias = 7;
 SET @umbralSospecha = 0.7;
 
-SELECT
-	id_empresa,
+SELECT	id_empresa,
 	CURDATE() AS 'fecha_corriente',
 	AVG(cantidad) AS 'media_historica',
 	SUM(IF(DATEDIFF(NOW(), fecha_vigencia) < @nDias, cantidad, 0))/ @nDias AS 'media_reciente'
